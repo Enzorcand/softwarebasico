@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 //#include "lib_ppm.h"
@@ -19,9 +20,8 @@ int main() {
     struct image_s saida;
     struct image_s *image_out = &saida;
     int entry = 0;
-    int j = 0;
 
-    entry = read_ppm("lena.ppm", image_in);
+    entry = read_ppm("/workspaces/softwarebasico/lena.ppm", image_in);
     if(entry < 0)
     {
         printf("read_ppm error");
@@ -35,20 +35,24 @@ int main() {
         return 0;
     }   
 
-    int l = 0;
-    for(int k = 0; k < data.height; k++){
+    int j = 0;
+    for(int k = 0; k < data.height; k++){    
+        int i = 0;
         for(int m = 0; m < data.width; m++){
             int red = image_in->pix[k*image_in->width + m].r;
             int green = image_in->pix[k*image_in->width + m].g;
             int blue = image_in->pix[k*image_in->width + m].b;
-
-            for(int n = 0; n < 3; n++){
-                image_out->pix[k*image_in->width + n*image_in->width + l].r = red;
-                image_out->pix[k*image_in->width + n*image_in->width + l].g = green;
-                image_out->pix[k*image_in->width + n*image_in->width + l].b = blue;
-                l++;
+            for (int l = 0; l < 3; l++){
+                for(int n = 0; n < 3; n++){
+                    image_out->pix[(j + l)*image_in->width + i + n].r = red;
+                    image_out->pix[(j + l)*image_in->width + i + n].g = green;
+                    image_out->pix[(j + l)*image_in->width + i + n].b = blue;
+                    
+                }
             }
+            i += 3;
         }
+        j += 9;
     }
 
     /* modificando o valor do pixel [20, 50] (posic¸˜ao X, Y) */
@@ -59,11 +63,10 @@ int main() {
     entry = write_ppm("copy.ppm", image_out);
     if( entry < 0)
     {
-        printf("read_ppm error");
+        printf("write_ppm error");
         return 0;
     }
 }
-
 
 int read_ppm(char *file, struct image_s *image)
 {
